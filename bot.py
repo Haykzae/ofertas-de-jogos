@@ -14,7 +14,12 @@ STATE = Path("data/enviados.json")
 
 
 def request(url, payload=None):
-    body = json.dumps(payload).encode("utf-8") if payload is not None else None
+    body = (
+        json.dumps(payload).encode("utf-8")
+        if payload is not None
+        else None
+    )
+
     last_error = "Erro desconhecido"
 
     for attempt in range(5):
@@ -39,11 +44,12 @@ def request(url, payload=None):
                     return json.loads(raw)
                 except (ValueError, UnicodeError):
                     raise RuntimeError(
-                        "O serviço respondeu com conteúdo que não é JSON."
+                        "O serviço respondeu com conteúdo "
+                        "que não é JSON."
                     ) from None
 
         except HTTPError as exc:
-            # Não exibe a URL, para proteger o webhook.
+            # Não mostra a URL para proteger o webhook.
             last_error = f"HTTP {exc.code}"
 
             if exc.code != 429 and exc.code < 500:
@@ -52,7 +58,9 @@ def request(url, payload=None):
                 ) from None
 
             try:
-                delay = float(exc.headers.get("Retry-After", 2 ** attempt))
+                delay = float(
+                    exc.headers.get("Retry-After", 2 ** attempt)
+                )
             except (TypeError, ValueError):
                 delay = 2 ** attempt
 
@@ -69,9 +77,81 @@ def request(url, payload=None):
 
 
 def discounts():
-    store_rows = request(
-        "https://www.cheapshark.com/api/1.0/stores"
-    )
+    def fetch(endpoint, params=None):
+        url = (
+            "https://www.cheapshark.com/api/1.0/"
+            + endpoint
+        )
+
+        if params:
+            url += "?" + urlencode(params)
+
+        page_label = (
+            f", página {params['pageNumber']}"
+            if params and "pageNumber" in params
+            else ""
+        )
+
+        for attempt in range(5):
+            req = Request(
+                url,
+                headers={
+                    "User-Agent": "GameDealsNotifier/1.0",
+                    "Accept": "application/json",
+                },
+            )
+
+            try:
+                with urlopen(req, timeout=40) as response:
+                    data = json.loads(response.read())
+                    total = response.headers.get(
+                        "X-Total-Page-Count"
+                    )
+
+                    return (
+                        data,
+                        int(total) if total is not None else None,
+                    )
+
+            except HTTPError as exc:
+                if exc.code == 429 or exc.code >= 500:
+                    if attempt < 4:
+                        try:
+                            delay = float(
+                                exc.headers.get(
+                                    "Retry-After",
+                                    2 ** (attempt + 1),
+                                )
+                            )
+                        except (TypeError, ValueError):
+                            delay = 2 ** (attempt + 1)
+
+                        time.sleep(min(max(delay, 1), 60))
+                        continue
+
+                # A consulta ao CheapShark não contém
+                # o segredo do Discord.
+                detail = exc.read(600).decode(
+                    "utf-8",
+                    errors="replace",
+                )
+
+                raise RuntimeError(
+                    f"CheapShark /{endpoint}{page_label}: "
+                    f"HTTP {exc.code}. Resposta: {detail}"
+                ) from None
+
+            except (URLError, TimeoutError):
+                if attempt < 4:
+                    time.sleep(2 ** (attempt + 1))
+                    continue
+
+                raise RuntimeError(
+                    f"CheapShark /{endpoint}{page_label}: "
+                    "falha de conexão após cinco tentativas."
+                ) from None
+
+    store_rows, _ = fetch("stores")
 
     if not isinstance(store_rows, list):
         raise RuntimeError(
@@ -87,21 +167,28 @@ def discounts():
     page = 0
 
     while True:
-        query = urlencode({
-            "pageNumber": page,
-            "pageSize": 60,
-            "sortBy": "Savings",
-            "onSale": 1,
-        })
-
-        rows = request(
-            "https://www.cheapshark.com/api/1.0/deals?" + query
+        rows, total_pages = fetch(
+            "deals",
+            {
+                "pageNumber": page,
+                "pageSize": 60,
+                "sortBy": "Savings",
+                "onSale": 1,
+            },
         )
 
         if not isinstance(rows, list):
             raise RuntimeError(
-                "CheapShark retornou uma lista de ofertas inesperada."
+                f"Resposta de ofertas inesperada "
+                f"na página {page}."
             )
+
+        print(
+            f"CheapShark: página {page}, "
+            f"{len(rows)} ofertas; "
+            f"total de páginas informado: {total_pages}.",
+            flush=True,
+        )
 
         for row in rows:
             saving = Decimal(str(row["savings"]))
@@ -110,8 +197,10 @@ def discounts():
                 continue
 
             price = Decimal(str(row["salePrice"]))
-            title = str(row["title"])[:200]
-            store = stores.get(str(row["storeID"]), "Loja")
+            store = stores.get(
+                str(row["storeID"]),
+                "Loja",
+            )
 
             link = (
                 "https://www.cheapshark.com/redirect?"
@@ -126,28 +215,37 @@ def discounts():
                     f"{saving:.1f}% de desconto"
                 )
 
-            # Mantém o formato do histórico da versão anterior.
+            # Mantém o formato do histórico anterior.
             key = (
                 f"cs:{row['gameID']}:"
                 f"{row['storeID']}:{price}"
             )
 
             embed = {
-                "title": title,
+                "title": str(row["title"])[:200],
                 "url": link,
                 "description": (
                     f"{label}\n"
                     f"Loja: {store}\n"
                     "Preço de referência em dólares. "
-                    "Confira o valor e a disponibilidade no Brasil."
+                    "Confira o valor e a disponibilidade "
+                    "no Brasil."
                 ),
-                "color": 0x2ECC71 if price == 0 else 0x3498DB,
+                "color": (
+                    0x2ECC71 if price == 0 else 0x3498DB
+                ),
                 "footer": {"text": "Fonte: CheapShark"},
             }
 
             result.append((key, embed))
 
-        if len(rows) < 60:
+        if not rows or len(rows) < 60:
+            break
+
+        if (
+            total_pages is not None
+            and page + 1 >= total_pages
+        ):
             break
 
         if any(
@@ -157,7 +255,7 @@ def discounts():
             break
 
         page += 1
-        time.sleep(0.5)
+        time.sleep(1)
 
     return result
 
@@ -191,9 +289,12 @@ def free_games():
             "url": row["open_giveaway_url"],
             "description": (
                 f"GRÁTIS · {row.get('platforms', 'PC')}\n"
-                f"Prazo: {row.get('end_date', 'Confira no link')}\n"
-                "Confira região, estoque e instruções de resgate.\n"
-                "[Fonte: GamerPower](https://www.gamerpower.com/)"
+                f"Prazo: "
+                f"{row.get('end_date', 'Confira no link')}\n"
+                "Confira região, estoque "
+                "e instruções de resgate.\n"
+                "[Fonte: GamerPower]"
+                "(https://www.gamerpower.com/)"
             ),
             "color": 0x2ECC71,
         }
@@ -204,18 +305,31 @@ def free_games():
 
 
 def save_history(sent):
-    STATE.parent.mkdir(parents=True, exist_ok=True)
+    STATE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     temporary = STATE.with_suffix(".tmp")
+
     temporary.write_text(
-        json.dumps(sent, ensure_ascii=False, indent=2),
+        json.dumps(
+            sent,
+            ensure_ascii=False,
+            indent=2,
+        ),
         encoding="utf-8",
     )
+
     temporary.replace(STATE)
 
 
 def main():
-    webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+    webhook = os.environ.get(
+        "DISCORD_WEBHOOK_URL",
+        "",
+    ).strip()
+
     parsed = urlparse(webhook)
 
     if (
@@ -229,10 +343,14 @@ def main():
         )
 
     if STATE.exists():
-        sent = json.loads(STATE.read_text(encoding="utf-8"))
+        sent = json.loads(
+            STATE.read_text(encoding="utf-8")
+        )
 
         if not isinstance(sent, dict):
-            raise RuntimeError("O histórico de envios está inválido.")
+            raise RuntimeError(
+                "O histórico de envios está inválido."
+            )
     else:
         sent = {}
 
@@ -248,13 +366,26 @@ def main():
         try:
             found = source()
             offers.extend(found)
-            print(f"{name}: {len(found)} ofertas encontradas.", flush=True)
+
+            print(
+                f"{name}: {len(found)} ofertas encontradas.",
+                flush=True,
+            )
 
         except Exception as exc:
-            detail = f"{name}: {type(exc).__name__}: {exc}"
-            errors.append(detail)
-            print(f"ERRO — {detail}", flush=True)
+            detail = (
+                f"{name}: "
+                f"{type(exc).__name__}: {exc}"
+            )
 
+            errors.append(detail)
+            print(
+                f"ERRO — {detail}",
+                flush=True,
+            )
+
+    # Até 100 ofertas por execução.
+    # As demais ficam para as próximas rodadas.
     pending = list({
         key: embed
         for key, embed in offers
@@ -270,7 +401,10 @@ def main():
             {
                 "username": "Ofertas de jogos",
                 "allowed_mentions": {"parse": []},
-                "embeds": [embed for _, embed in batch],
+                "embeds": [
+                    embed
+                    for _, embed in batch
+                ],
             },
         )
 
