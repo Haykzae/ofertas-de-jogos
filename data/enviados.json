@@ -2018,10 +2018,643 @@
       "match:deadlock2shrinewars": {
         "time": 1792339349,
         "value": null
+      },
+      "quality:1182900": {
+        "time": 1792346927,
+        "value": {
+          "rating": 90.69433474545846,
+          "count": 27854,
+          "tags": [
+            "Adventure",
+            "Action"
+          ]
+        }
+      },
+      "quality:204100": {
+        "time": 1792346930,
+        "value": {
+          "rating": 87.04926123569511,
+          "count": 64838,
+          "tags": [
+            "Action",
+            "Third-Person Shooter"
+          ]
+        }
+      },
+      "quality:818320": {
+        "time": 1792346933,
+        "value": {
+          "rating": 90.0454201362604,
+          "count": 2642,
+          "tags": [
+            "Action",
+            "Adventure"
+          ]
+        }
+      },
+      "quality:829110": {
+        "time": 1792346936,
+        "value": {
+          "rating": 91.1800193050193,
+          "count": 8288,
+          "tags": [
+            "Action",
+            "Adventure"
+          ]
+        }
+      },
+      "quality:1599600": {
+        "time": 1792346941,
+        "value": {
+          "rating": 94.56806988532192,
+          "count": 27817,
+          "tags": [
+            "Co-op",
+            "Management"
+          ]
+        }
+      },
+      "quality:1030840": {
+        "time": 1792346943,
+        "value": {
+          "rating": 86.91014347740632,
+          "count": 111934,
+          "tags": [
+            "Open World",
+            "Crime"
+          ]
+        }
+      },
+      "quality:200260": {
+        "time": 1792346947,
+        "value": {
+          "rating": 96.19384623189508,
+          "count": 78846,
+          "tags": [
+            "Action",
+            "Open World"
+          ]
+        }
+      },
+      "quality:3582250": {
+        "time": 1792346950,
+        "value": {
+          "rating": 91.35338345864662,
+          "count": 798,
+          "tags": [
+            "Early Access",
+            "Simulation"
+          ]
+        }
+      },
+      "quality:770810": {
+        "time": 1792346953,
+        "value": {
+          "rating": 87.86678403755869,
+          "count": 6816,
+          "tags": [
+            "Funny",
+            "Management"
+          ]
+        }
+      },
+      "quality:2881650": {
+        "time": 1792346956,
+        "value": {
+          "rating": 93.77389671132468,
+          "count": 163987,
+          "tags": [
+            "Online Co-Op",
+            "Horror"
+          ]
+        }
+      },
+      "quality:1620730": {
+        "time": 1792346958,
+        "value": {
+          "rating": 84.98240675580577,
+          "count": 7105,
+          "tags": [
+            "Action",
+            "Singleplayer"
+          ]
+        }
+      },
+      "quality:784150": {
+        "time": 1792346961,
+        "value": {
+          "rating": 91.21196791211968,
+          "count": 27674,
+          "tags": [
+            "Strategy",
+            "City Builder"
+          ]
+        }
+      },
+      "quality:2124120": {
+        "time": 1792346964,
+        "value": {
+          "rating": 87.59568385133265,
+          "count": 10843,
+          "tags": [
+            "Early Access",
+            "Action Roguelike"
+          ]
+        }
+      },
+      "quality:504230": {
+        "time": 1792346967,
+        "value": {
+          "rating": 97.40170802449242,
+          "count": 148944,
+          "tags": [
+            "Precision Platformer",
+            "Difficult"
+          ]
+        }
+      },
+      "quality:2489330": {
+        "time": 1792346970,
+        "value": {
+          "rating": 92.3852748361069,
+          "count": 3966,
+          "tags": [
+            "Strategy",
+            "Simulation"
+          ]
+        }
+      },
+      "quality:45760": {
+        "time": 1792346973,
+        "value": {
+          "rating": 90.54865605504052,
+          "count": 17151,
+          "tags": [
+            "Fighting",
+            "Arcade"
+          ]
+        }
+      },
+      "quality:225540": {
+        "time": 1792346976,
+        "value": {
+          "rating": 84.44731879879693,
+          "count": 128338,
+          "tags": [
+            "Open World",
+            "Action"
+          ]
+        }
+      },
+      "quality:418030": {
+        "time": 1792346979,
+        "value": null
+      },
+      "quality:2248760": {
+        "time": 1792346980,
+        "value": null
+      },
+      "quality:310950": {
+        "time": 1792346981,
+        "value": null
+      },
+      "quality:307690": {
+        "time": 1792346983,
+        "value": {
+          "rating": 94.12635981180453,
+          "count": 80342,
+          "tags": [
+            "Open World",
+            "Action"
+          ]
+        }
+      },
+      "quality:581320": {
+        "time": 1792346986,
+        "value": {
+          "rating": 84.76685334371537,
+          "count": 133564,
+          "tags": [
+            "FPS",
+            "Realistic"
+          ]
+        }
+      },
+      "quality:508440": {
+        "time": 1792346989,
+        "value": {
+          "rating": 97.82727935625005,
+          "count": 154967,
+          "tags": [
+            "Sandbox",
+            "Simulation"
+          ]
+        }
+      },
+      "quality:360430": {
+        "time": 1792346991,
+        "value": null
+      },
+      "quality:552500": {
+        "time": 1792346992,
+        "value": {
+          "rating": 85.0348780619694,
+          "count": 147944,
+          "tags": [
+            "Co-op",
+            "Dark Fantasy"
+          ]
+        }
+      },
+      "quality:2104890": {
+        "time": 1792346994,
+        "value": null
+      },
+      "quality:214510": {
+        "time": 1792346996,
+        "value": {
+          "rating": 90.13295580450573,
+          "count": 16246,
+          "tags": [
+            "Adventure",
+            "Local Co-Op"
+          ]
+        }
+      },
+      "quality:2717880": {
+        "time": 1792346999,
+        "value": {
+          "rating": 89.86328776258753,
+          "count": 2999,
+          "tags": [
+            "Roguelite",
+            "Action Roguelike"
+          ]
+        }
+      },
+      "quality:1940340": {
+        "time": 1792347001,
+        "value": null
+      },
+      "quality:1949030": {
+        "time": 1792347002,
+        "value": {
+          "rating": 82.14403156856297,
+          "count": 3041,
+          "tags": [
+            "Detective",
+            "Story Rich"
+          ]
+        }
+      },
+      "quality:641990": {
+        "time": 1792347006,
+        "value": {
+          "rating": 90.54946350666195,
+          "count": 33924,
+          "tags": [
+            "Multiplayer",
+            "Strategy"
+          ]
+        }
+      },
+      "quality:1030830": {
+        "time": 1792347008,
+        "value": null
+      },
+      "quality:675010": {
+        "time": 1792347009,
+        "value": {
+          "rating": 91.62287202982527,
+          "count": 44526,
+          "tags": [
+            "Offroad",
+            "Simulation"
+          ]
+        }
+      },
+      "match:bloodrefreshedsupply": {
+        "time": 1792347012,
+        "value": null
+      },
+      "match:foundation": {
+        "time": 1792347012,
+        "value": "690830"
+      },
+      "match:bearsinspace": {
+        "time": 1792347014,
+        "value": "1309620"
+      },
+      "quality:1309620": {
+        "time": 1792347015,
+        "value": {
+          "rating": 86.54173764906304,
+          "count": 587,
+          "tags": [
+            "Singleplayer",
+            "FPS"
+          ]
+        }
+      },
+      "match:carrion": {
+        "time": 1792347016,
+        "value": "953490"
+      },
+      "quality:953490": {
+        "time": 1792347017,
+        "value": {
+          "rating": 94.38858433651966,
+          "count": 36301,
+          "tags": [
+            "Gore",
+            "Villain Protagonist"
+          ]
+        }
+      },
+      "match:kenshi": {
+        "time": 1792347019,
+        "value": "233860"
+      },
+      "quality:233860": {
+        "time": 1792347020,
+        "value": {
+          "rating": 95.59388114715722,
+          "count": 117473,
+          "tags": [
+            "Open World",
+            "Sandbox"
+          ]
+        }
+      },
+      "match:slimerancher": {
+        "time": 1792347021,
+        "value": "433340"
+      },
+      "quality:433340": {
+        "time": 1792347022,
+        "value": {
+          "rating": 98.01349609523088,
+          "count": 158268,
+          "tags": [
+            "Cute",
+            "Exploration"
+          ]
+        }
+      },
+      "match:homeworldremasteredcollection": {
+        "time": 1792347024,
+        "value": "244160"
+      },
+      "quality:244160": {
+        "time": 1792347024,
+        "value": {
+          "rating": 87.8984028706114,
+          "count": 14213,
+          "tags": [
+            "Space",
+            "Strategy"
+          ]
+        }
+      },
+      "match:huniepop": {
+        "time": 1792347026,
+        "value": "339800"
+      },
+      "quality:339800": {
+        "time": 1792347027,
+        "value": null
+      },
+      "match:thetalosprinciplegoldedition": {
+        "time": 1792347027,
+        "value": null
+      },
+      "match:fear3": {
+        "time": 1792347027,
+        "value": "21100"
+      },
+      "quality:21100": {
+        "time": 1792347028,
+        "value": null
+      },
+      "match:bladerunner": {
+        "time": 1792347028,
+        "value": null
+      },
+      "match:xcomapocalypse": {
+        "time": 1792347028,
+        "value": "7660"
+      },
+      "quality:7660": {
+        "time": 1792347029,
+        "value": {
+          "rating": 88.72802481902792,
+          "count": 967,
+          "tags": [
+            "Strategy",
+            "Sci-fi"
+          ]
+        }
+      },
+      "match:podgold": {
+        "time": 1792347031,
+        "value": null
+      },
+      "match:blakestoneplanetstrike": {
+        "time": 1792347032,
+        "value": "358310"
+      },
+      "quality:358310": {
+        "time": 1792347032,
+        "value": null
+      },
+      "match:transporttycoondeluxe": {
+        "time": 1792347032,
+        "value": "3766810"
+      },
+      "quality:3766810": {
+        "time": 1792347032,
+        "value": null
+      },
+      "match:metaleden": {
+        "time": 1792347032,
+        "value": "990380"
+      },
+      "quality:990380": {
+        "time": 1792347033,
+        "value": {
+          "rating": 83.50597609561753,
+          "count": 2510,
+          "tags": [
+            "Action",
+            "Shooter"
+          ]
+        }
+      },
+      "match:vampirethemasqueradereckoningofnewyork": {
+        "time": 1792347035,
+        "value": null
+      },
+      "match:scarsabove": {
+        "time": 1792347035,
+        "value": "1196090"
+      },
+      "quality:1196090": {
+        "time": 1792347035,
+        "value": null
+      },
+      "match:returntomonkeyisland": {
+        "time": 1792347035,
+        "value": "2060130"
+      },
+      "quality:2060130": {
+        "time": 1792347036,
+        "value": {
+          "rating": 91.07142857142857,
+          "count": 9128,
+          "tags": [
+            "Point & Click",
+            "Adventure"
+          ]
+        }
+      },
+      "match:oldworld": {
+        "time": 1792347038,
+        "value": "597180"
+      },
+      "quality:597180": {
+        "time": 1792347039,
+        "value": {
+          "rating": 82.56762559038214,
+          "count": 6987,
+          "tags": [
+            "Strategy",
+            "Simulation"
+          ]
+        }
+      },
+      "match:aircraftcarriersurvival": {
+        "time": 1792347040,
+        "value": "1021100"
+      },
+      "quality:1021100": {
+        "time": 1792347040,
+        "value": null
+      },
+      "match:theplanetcrafter": {
+        "time": 1792347040,
+        "value": "1284190"
+      },
+      "quality:1284190": {
+        "time": 1792347041,
+        "value": {
+          "rating": 96.03499478288788,
+          "count": 74754,
+          "tags": [
+            "Base Building",
+            "Open World Survival Craft"
+          ]
+        }
+      },
+      "match:thesmurfsmissionvileaf": {
+        "time": 1792347043,
+        "value": null
+      },
+      "match:mrprepper": {
+        "time": 1792347043,
+        "value": "761830"
+      },
+      "match:vampirethemasqueradeshadowsofnewyork": {
+        "time": 1792347043,
+        "value": null
+      },
+      "match:towerhuntererzastrial": {
+        "time": 1792347043,
+        "value": "844850"
+      },
+      "quality:844850": {
+        "time": 1792347044,
+        "value": null
+      },
+      "match:daymare1998": {
+        "time": 1792347044,
+        "value": "842100"
+      },
+      "quality:842100": {
+        "time": 1792347044,
+        "value": null
+      },
+      "match:redfactionguerrillaremarstered": {
+        "time": 1792347044,
+        "value": "667720"
+      },
+      "quality:667720": {
+        "time": 1792347044,
+        "value": null
+      },
+      "match:frostpunk": {
+        "time": 1792347044,
+        "value": "323190"
+      },
+      "quality:323190": {
+        "time": 1792347045,
+        "value": {
+          "rating": 92.74484956008544,
+          "count": 138095,
+          "tags": [
+            "City Builder",
+            "Survival"
+          ]
+        }
+      },
+      "match:kingdomcomedeliverance": {
+        "time": 1792347047,
+        "value": "379430"
+      },
+      "quality:379430": {
+        "time": 1792347048,
+        "value": {
+          "rating": 84.4289213850943,
+          "count": 186962,
+          "tags": [
+            "Medieval",
+            "RPG"
+          ]
+        }
+      },
+      "match:everspacetm": {
+        "time": 1792347050,
+        "value": "396750"
+      },
+      "quality:396750": {
+        "time": 1792347050,
+        "value": null
+      },
+      "match:lordsofthefallengameoftheyearedition2014": {
+        "time": 1792347050,
+        "value": null
+      },
+      "match:metrolastlightredux": {
+        "time": 1792347051,
+        "value": "287390"
+      },
+      "quality:287390": {
+        "time": 1792347051,
+        "value": {
+          "rating": 91.31393404889396,
+          "count": 82546,
+          "tags": [
+            "Post-apocalyptic",
+            "FPS"
+          ]
+        }
+      },
+      "match:saintsrowthethirdthefullpackage": {
+        "time": 1792347053,
+        "value": null
       }
     },
-    "steam_start": 100,
-    "gog_page": 3
+    "steam_start": 150,
+    "gog_page": 4
   },
   "steam-brl:1091500:59.97": 1792338854,
   "steam-brl:990080:24.99": 1792338857,
@@ -2124,5 +2757,46 @@
   "gog-brl:2078272297:9.39": 1792339341,
   "gog-brl:1077527220:13.49": 1792339343,
   "gog-brl:1434021265:7.29": 1792339345,
-  "gog-brl:1207659032:24.99": 1792339347
+  "gog-brl:1207659032:24.99": 1792339347,
+  "steam-brl:1182900:59.97": 1792346927,
+  "steam-brl:204100:29.85": 1792346930,
+  "steam-brl:818320:8.99": 1792346933,
+  "steam-brl:829110:26.99": 1792346936,
+  "steam-brl:870780:14.99": 1792346938,
+  "steam-brl:1599600:5.99": 1792346941,
+  "steam-brl:1030840:39.98": 1792346944,
+  "steam-brl:200260:17.99": 1792346947,
+  "steam-brl:3582250:32.09": 1792346950,
+  "steam-brl:770810:14.00": 1792346953,
+  "steam-brl:2881650:14.87": 1792346956,
+  "steam-brl:1620730:53.99": 1792346959,
+  "steam-brl:784150:19.99": 1792346962,
+  "steam-brl:2124120:29.59": 1792346964,
+  "steam-brl:504230:14.99": 1792346968,
+  "steam-brl:2489330:29.99": 1792346970,
+  "steam-brl:45760:16.77": 1792346973,
+  "steam-brl:225540:6.44": 1792346977,
+  "steam-brl:307690:8.39": 1792346983,
+  "steam-brl:581320:19.98": 1792346986,
+  "steam-brl:508440:20.39": 1792346989,
+  "steam-brl:552500:13.34": 1792346992,
+  "steam-brl:214510:17.99": 1792346996,
+  "steam-brl:2717880:11.99": 1792346999,
+  "steam-brl:1949030:15.50": 1792347003,
+  "steam-brl:641990:20.40": 1792347006,
+  "steam-brl:675010:14.98": 1792347009,
+  "gog-brl:1446930743:61.19": 1792347013,
+  "gog-brl:1577750719:5.89": 1792347015,
+  "gog-brl:1785384169:7.59": 1792347018,
+  "gog-brl:1193046833:23.19": 1792347020,
+  "gog-brl:1459259227:9.25": 1792347022,
+  "gog-brl:2114871440:9.59": 1792347025,
+  "gog-brl:1445249430:1.99": 1792347030,
+  "gog-brl:1253025084:19.79": 1792347033,
+  "gog-brl:1436760537:22.19": 1792347037,
+  "gog-brl:2010300617:7.99": 1792347039,
+  "gog-brl:1882985557:36.99": 1792347042,
+  "gog-brl:1648559910:13.35": 1792347046,
+  "gog-brl:1719198803:29.79": 1792347048,
+  "gog-brl:1430740172:9.89": 1792347052
 }
