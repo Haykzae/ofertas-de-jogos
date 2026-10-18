@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 STATE = Path("data/enviados.json")
 
 
-def add_thumbnail(embed, image_url):
+def add_image(embed, image_url):
     if not isinstance(image_url, str):
         return
 
@@ -21,7 +21,8 @@ def add_thumbnail(embed, image_url):
     parsed = urlparse(image_url)
 
     if parsed.scheme in ("https", "http") and parsed.hostname:
-        embed["thumbnail"] = {"url": image_url}
+        # Imagem grande abaixo do texto.
+        embed["image"] = {"url": image_url}
 
 
 def request(url, payload=None):
@@ -246,7 +247,7 @@ def discounts():
                 "footer": {"text": "Fonte: CheapShark"},
             }
 
-            add_thumbnail(embed, row.get("thumb"))
+            add_image(embed, row.get("thumb"))
             result.append((key, embed))
 
         if not rows or len(rows) < 60:
@@ -309,9 +310,10 @@ def free_games():
             "color": 0x2ECC71,
         }
 
-        add_thumbnail(
+        # Prioriza a imagem completa quando disponível.
+        add_image(
             embed,
-            row.get("thumbnail") or row.get("image"),
+            row.get("image") or row.get("thumbnail"),
         )
 
         result.append((key, embed))
