@@ -1,4 +1,4 @@
-"""Steam e GOG: links diretos, preços BRL e filtros de qualidade."""
+"""Steam e GOG: links diretos, preços BRL e filtros."""
 
 import html
 import json
@@ -17,24 +17,32 @@ from urllib.request import Request, urlopen
 STATE = Path("data/enviados.json")
 
 BLOCKED = {
-    "puzzle",
-    "hidden object",
-    "word game",
-    "match 3",
-    "match-3",
-    "jigsaw",
-    "sokoban",
-    "nonogram",
+    "puzzle", "hidden object", "word game",
+    "match 3", "match-3", "jigsaw",
+    "sokoban", "nonogram",
+}
+
+STORE_HOSTS = {
+    "store.steampowered.com",
+    "gog.com",
+    "www.gog.com",
+    "store.epicgames.com",
+    "www.epicgames.com",
 }
 
 META = {}
 
 
+class ServiceHTTPError(RuntimeError):
+    def __init__(self, status):
+        self.status = status
+        super().__init__(f"HTTP {status}")
+
+
 def fetch(url, payload=None, mode="json"):
     body = (
         json.dumps(payload).encode("utf-8")
-        if payload is not None
-        else None
+        if payload is not None else None
     )
 
     for attempt in range(3):
@@ -43,7 +51,7 @@ def fetch(url, payload=None, mode="json"):
                 url,
                 data=body,
                 headers={
-                    "User-Agent": "GameDealsNotifier/3.0",
+                    "User-Agent": "GameDealsNotifier/3.1",
                     "Content-Type": "application/json",
                 },
             )
@@ -61,10 +69,8 @@ def fetch(url, payload=None, mode="json"):
 
         except HTTPError as exc:
             if exc.code != 429 and exc.code < 500:
-                # Não mostra a URL do webhook.
-                raise RuntimeError(
-                    f"HTTP {exc.code}"
-                ) from None
+                # Não exibe o endereço do webhook.
+                raise ServiceHTTPError(exc.code) from None
 
             delay = 2 ** (attempt + 1)
 
@@ -122,9 +128,7 @@ class Tags(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag == "a" and self.active:
-            value = " ".join(
-                "".join(self.parts).split()
-            )
+            value = " ".join("".join(self.parts).split())
 
             if value and value not in self.tags:
                 self.tags.append(value)
@@ -157,23 +161,17 @@ def quality(app_id):
         total = int(summary.get("total_reviews", 0))
         positive = int(summary.get("total_positive", 0))
 
-        if total < 500:
-            return None
-
-        if positive * 100 < total * 80:
+        if total < 500 or positive * 100 < total * 80:
             return None
 
         time.sleep(0.4)
 
         parser = Tags()
-
-        parser.feed(
-            fetch(
-                f"https://store.steampowered.com/"
-                f"app/{app_id}/?l=english&cc=br",
-                mode="text",
-            )
-        )
+        parser.feed(fetch(
+            f"https://store.steampowered.com/"
+            f"app/{app_id}/?l=english&cc=br",
+            mode="text",
+        ))
 
         main_tags = parser.tags[:2]
 
@@ -192,35 +190,23 @@ def quality(app_id):
             "tags": main_tags,
         }
 
-    if not str(app_id).isdigit():
+    if not str(app_id).isdigit() or int(app_id) <= 0:
         return None
 
-    if int(app_id) <= 0:
-        return None
-
-    return cached(
-        "quality:" + str(app_id),
-        load,
-    )
+    return cached("quality:" + str(app_id), load)
 
 
 def normalize(title):
     title = unicodedata.normalize(
-        "NFKD",
-        html.unescape(title),
+        "NFKD", html.unescape(title)
     )
 
     title = "".join(
-        char
-        for char in title
+        char for char in title
         if not unicodedata.combining(char)
     )
 
-    return re.sub(
-        "[^a-z0-9]",
-        "",
-        title.casefold(),
-    )
+    return re.sub("[^a-z0-9]", "", title.casefold())
 
 
 def find_app(title):
@@ -243,13 +229,9 @@ def find_app(title):
             == normalize(title)
         }
 
-        # Só aceita uma correspondência exata e única.
         return ids.pop() if len(ids) == 1 else None
 
-    return cached(
-        "match:" + normalize(title),
-        load,
-    )
+    return cached("match:" + normalize(title), load)
 
 
 def steam_candidates():
@@ -272,25 +254,18 @@ def steam_candidates():
     )
 
     if not data.get("success") or "results_html" not in data:
-        raise RuntimeError(
-            "Busca da Steam em formato inesperado."
-        )
+        raise RuntimeError("Busca da Steam inválida.")
 
-    markup = data["results_html"]
-
-    ids = list(dict.fromkeys(
-        re.findall(
-            r'data-ds-appid="(\d+)"',
-            markup,
-        )
-    ))
+    ids = list(dict.fromkeys(re.findall(
+        r'data-ds-appid="(\d+)"',
+        data["results_html"],
+    )))
 
     total = int(data.get("total_count", 0))
 
     META["steam_start"] = (
         start + 50
-        if ids and start + 50 < total
-        else 0
+        if ids and start + 50 < total else 0
     )
 
     print(
@@ -319,10 +294,10 @@ def steam_candidates():
         game = entry["data"]
         price = game.get("price_overview", {})
 
-        if game.get("type") != "game":
-            continue
-
-        if price.get("currency") != "BRL":
+        if (
+            game.get("type") != "game"
+            or price.get("currency") != "BRL"
+        ):
             continue
 
         base = int(price["initial"])
@@ -366,35 +341,28 @@ def gog_candidates():
     })
 
     data = fetch(
-        "https://catalog.gog.com/v1/catalog?"
-        + query
+        "https://catalog.gog.com/v1/catalog?" + query
     )
 
     if not isinstance(data.get("products"), list):
-        raise RuntimeError(
-            "Catálogo da GOG em formato inesperado."
-        )
+        raise RuntimeError("Catálogo da GOG inválido.")
 
     META["gog_page"] = (
         page + 1
-        if page < int(data.get("pages", 1))
-        else 1
+        if page < int(data.get("pages", 1)) else 1
     )
 
-    print(
-        f"GOG: lote da página {page}.",
-        flush=True,
-    )
+    print(f"GOG: lote da página {page}.", flush=True)
 
     for game in data["products"]:
         price = game.get("price", {})
         base_money = price.get("baseMoney", {})
         final_money = price.get("finalMoney", {})
 
-        if game.get("productType") != "game":
-            continue
-
-        if final_money.get("currency") != "BRL":
+        if (
+            game.get("productType") != "game"
+            or final_money.get("currency") != "BRL"
+        ):
             continue
 
         base = Decimal(base_money["amount"])
@@ -409,8 +377,7 @@ def gog_candidates():
         link = game.get("storeLink", "")
 
         if urlparse(link).hostname not in {
-            "gog.com",
-            "www.gog.com",
+            "gog.com", "www.gog.com"
         }:
             continue
 
@@ -428,41 +395,105 @@ def gog_candidates():
         }
 
 
-def giveaway_candidates():
-    rows = fetch(
-        "https://www.gamerpower.com/api/giveaways"
-        "?platform=pc&type=game&sort-by=date"
+def direct_store_link(row):
+    # Prioriza links de loja já presentes no anúncio.
+    text = html.unescape(" ".join(
+        str(row.get(field, ""))
+        for field in (
+            "description",
+            "instructions",
+            "open_giveaway_url",
+        )
+    ))
+
+    links = re.findall(
+        r'https?://[^\s<>"\']+',
+        text,
     )
+
+    valid = []
+
+    for link in links:
+        link = link.rstrip(".,);]")
+        parsed = urlparse(link)
+        path = parsed.path
+
+        is_product = (
+            parsed.hostname == "store.steampowered.com"
+            and re.match(r"^/app/\d+", path)
+        ) or (
+            parsed.hostname in {"gog.com", "www.gog.com"}
+            and re.match(r"^/(?:[a-z]{2}/)?game/", path)
+        ) or (
+            parsed.hostname in {
+                "store.epicgames.com",
+                "www.epicgames.com",
+            }
+            and re.match(r"^/(?:[a-z]{2}(?:-[a-z]{2})?/)?p/", path)
+        )
+
+        if is_product and link not in valid:
+            valid.append(link)
+
+    # Não escolhe entre produtos diferentes.
+    if len(valid) == 1:
+        return valid[0]
+
+    link = row.get("open_giveaway_url", "")
+
+    if urlparse(link).hostname not in {
+        "gamerpower.com", "www.gamerpower.com"
+    }:
+        return None
+
+    try:
+        direct = fetch(link, mode="url")
+
+    except ServiceHTTPError as exc:
+        if exc.status == 403:
+            print(
+                f"AVISO: link do anúncio {row.get('id')} "
+                "bloqueado com HTTP 403; resgate ignorado.",
+                flush=True,
+            )
+            return None
+        raise
+
+    if urlparse(direct).hostname in STORE_HOSTS:
+        return direct
+
+    return None
+
+
+def giveaway_candidates():
+    try:
+        rows = fetch(
+            "https://www.gamerpower.com/api/giveaways"
+            "?platform=pc&type=game&sort-by=date"
+        )
+
+    except ServiceHTTPError as exc:
+        if exc.status == 403:
+            print(
+                "AVISO: GamerPower recusou acesso com HTTP 403. "
+                "A busca de resgates grátis foi pulada nesta "
+                "execução. Steam e GOG continuarão.",
+                flush=True,
+            )
+            return
+        raise
 
     if isinstance(rows, dict):
         if str(rows.get("status")) in {"0", "201"}:
             return
 
     if not isinstance(rows, list):
-        raise RuntimeError(
-            "Lista de jogos grátis em formato inesperado."
-        )
+        raise RuntimeError("Lista de jogos grátis inválida.")
 
     for row in rows:
-        link = row.get("open_giveaway_url", "")
+        direct = direct_store_link(row)
 
-        if urlparse(link).hostname not in {
-            "gamerpower.com",
-            "www.gamerpower.com",
-        }:
-            continue
-
-        # Segue o redirecionamento para obter a página da loja.
-        direct = fetch(link, mode="url")
-        host = urlparse(direct).hostname
-
-        if host not in {
-            "store.steampowered.com",
-            "gog.com",
-            "www.gog.com",
-            "store.epicgames.com",
-            "www.epicgames.com",
-        }:
+        if not direct:
             continue
 
         match = re.search(
@@ -497,8 +528,7 @@ def giveaway_candidates():
             "image": row.get("image"),
             "free": True,
             "deadline": row.get(
-                "end_date",
-                "Confira na loja",
+                "end_date", "Confira na loja"
             ),
         }
 
@@ -524,8 +554,7 @@ def main():
     global META
 
     webhook = os.environ.get(
-        "DISCORD_WEBHOOK_URL",
-        "",
+        "DISCORD_WEBHOOK_URL", ""
     ).strip()
 
     parsed = urlparse(webhook)
@@ -536,27 +565,20 @@ def main():
         or not parsed.path.startswith("/api/webhooks/")
     ):
         raise RuntimeError(
-            "Confira o segredo DISCORD_WEBHOOK_URL "
-            "no GitHub."
+            "Confira o segredo DISCORD_WEBHOOK_URL."
         )
 
     sent = (
         json.loads(STATE.read_text("utf-8"))
-        if STATE.exists()
-        else {}
+        if STATE.exists() else {}
     )
 
     if not isinstance(sent, dict):
         raise RuntimeError("Histórico inválido.")
 
-    META = sent.get(
-        "_direct_v3",
-        {"cache": {}},
-    )
-
+    META = sent.get("_direct_v3", {"cache": {}})
     META.setdefault("cache", {})
 
-    # Atualiza avaliações e correspondências a cada 24 horas.
     META["cache"] = {
         key: value
         for key, value in META["cache"].items()
@@ -647,8 +669,7 @@ def main():
                     "description": description,
                     "color": (
                         0x2ECC71
-                        if game["price"] == 0
-                        else 0x3498DB
+                        if game["price"] == 0 else 0x3498DB
                     ),
                 }
 
@@ -681,9 +702,9 @@ def main():
                 time.sleep(1)
 
         except Exception as exc:
-            errors.append(
-                f"{name}: {type(exc).__name__}: {exc}"
-            )
+            detail = f"{name}: {type(exc).__name__}: {exc}"
+            errors.append(detail)
+            print(f"ERRO: {detail}", flush=True)
 
         finally:
             save(sent)
@@ -693,10 +714,7 @@ def main():
             flush=True,
         )
 
-    print(
-        f"Total: {total} avisos.",
-        flush=True,
-    )
+    print(f"Total: {total} avisos.", flush=True)
 
     if errors:
         raise RuntimeError(" | ".join(errors))
