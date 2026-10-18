@@ -1,0 +1,36 @@
+name: Ofertas de jogos
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ofertas
+  cancel-in-progress: false
+jobs:
+  buscar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Buscar e enviar ofertas
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python bot.py
+      - name: Salvar histórico de envios
+        if: always()
+        shell: bash
+        run: |
+          if [ -f data/enviados.json ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/enviados.json
+            if ! git diff --cached --quiet; then
+              git commit -m 'Atualizar histórico de ofertas'
+              git push
+            fi
+          fi
