@@ -13,6 +13,17 @@ from urllib.request import Request, urlopen
 STATE = Path("data/enviados.json")
 
 
+def add_thumbnail(embed, image_url):
+    if not isinstance(image_url, str):
+        return
+
+    image_url = image_url.strip()
+    parsed = urlparse(image_url)
+
+    if parsed.scheme in ("https", "http") and parsed.hostname:
+        embed["thumbnail"] = {"url": image_url}
+
+
 def request(url, payload=None):
     body = (
         json.dumps(payload).encode("utf-8")
@@ -129,8 +140,6 @@ def discounts():
                         time.sleep(min(max(delay, 1), 60))
                         continue
 
-                # A consulta ao CheapShark não contém
-                # o segredo do Discord.
                 detail = exc.read(600).decode(
                     "utf-8",
                     errors="replace",
@@ -215,7 +224,7 @@ def discounts():
                     f"{saving:.1f}% de desconto"
                 )
 
-            # Mantém o formato do histórico anterior.
+            # Preserva o histórico para não repetir ofertas.
             key = (
                 f"cs:{row['gameID']}:"
                 f"{row['storeID']}:{price}"
@@ -237,6 +246,7 @@ def discounts():
                 "footer": {"text": "Fonte: CheapShark"},
             }
 
+            add_thumbnail(embed, row.get("thumb"))
             result.append((key, embed))
 
         if not rows or len(rows) < 60:
@@ -298,6 +308,11 @@ def free_games():
             ),
             "color": 0x2ECC71,
         }
+
+        add_thumbnail(
+            embed,
+            row.get("thumbnail") or row.get("image"),
+        )
 
         result.append((key, embed))
 
@@ -379,13 +394,13 @@ def main():
             )
 
             errors.append(detail)
+
             print(
                 f"ERRO — {detail}",
                 flush=True,
             )
 
     # Até 100 ofertas por execução.
-    # As demais ficam para as próximas rodadas.
     pending = list({
         key: embed
         for key, embed in offers
